@@ -6352,11 +6352,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/guillaumezarb/Documents/GitHub/crypto-dashboard/api/api.csproj",
+      "projectUniqueName": "/Users/guillaumezarb/Documents/GitHub/cryto-api/api.csproj",
       "projectName": "api",
-      "projectPath": "/Users/guillaumezarb/Documents/GitHub/crypto-dashboard/api/api.csproj",
+      "projectPath": "/Users/guillaumezarb/Documents/GitHub/cryto-api/api.csproj",
       "packagesPath": "/Users/guillaumezarb/.nuget/packages/",
-      "outputPath": "/Users/guillaumezarb/Documents/GitHub/crypto-dashboard/api/obj/",
+      "outputPath": "/Users/guillaumezarb/Documents/GitHub/cryto-api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/guillaumezarb/.nuget/NuGet/NuGet.Config"

@@ -1,15 +1,13 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Web;
-using System.Net;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using api.Models;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using api.Services;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Controllers
@@ -36,7 +34,7 @@ namespace api.Controllers
                     Logger.Log(filePath);
                     using (var stream = System.IO.File.Create(filePath))
                     {
-                        file.CopyToAsync(stream);                        
+                        file.CopyTo(stream);                        
                     }
                     FileInfo fi = new FileInfo(filePath);                        
                     int i = 0;
@@ -93,19 +91,25 @@ namespace api.Controllers
                 return null;                          
             }
         }
-        private static string API_KEY = "9f6f5baf-d671-4815-8b42-7766f3036d01";               
+        [HttpGet]
+        [Route("currencies")]
+        public object Currencies(string slug = null)
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            if (slug == null){
+                slug = "btc,eth,ada,vet,doge,matic,ltc,sand";
+            }
+            dic.Add("symbol", slug);
+            return CoinMarketCap.Call("v1/cryptocurrency/info", dic);                     
+        }
+                   
 
         [HttpGet]
-        public string Get()
+        public string Get(string currency)
         {
-            var URL = new UriBuilder("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest");
-            var queryString = HttpUtility.ParseQueryString(string.Empty);
-            queryString["symbol"] = "eth";
-            URL.Query = queryString.ToString();
-            var client = new WebClient();
-            client.Headers.Add("X-CMC_PRO_API_KEY", API_KEY);
-            client.Headers.Add("Accepts", "application/json");      
-            return client.DownloadString(URL.ToString());                    
+            Dictionary<string, string> query = new Dictionary<string, string>();
+            query.Add("symbol", currency);
+            return CoinMarketCap.Call("v1/cryptocurrency/quotes/latest", query);                     
         }
     }
 }

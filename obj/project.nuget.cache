@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "WyypMYW4rf8DZzPmAbR/z9++5PzvTLHdVZmSJl7H1aMWQL8i3jXsVnoYR8WM8z2EIUJp7hDI/m05twrDB/qM9w==",
+  "dgSpecHash": "gjoOKuAHKSH1ovcEmvIhkgAkxCXOfERbpL9qsaUgS+YowEFvFeHVnMPR5wcdjUxbMf2vMkwwNseAfL95jRsbmg==",
   "success": true,
-  "projectFilePath": "/Users/guillaumezarb/Documents/GitHub/crypto-dashboard/api/api.csproj",
+  "projectFilePath": "/Users/guillaumezarb/Documents/GitHub/cryto-api/api.csproj",
   "expectedPackageFiles": [
     "/Users/guillaumezarb/.nuget/packages/epplus/5.8.4/epplus.5.8.4.nupkg.sha512",
     "/Users/guillaumezarb/.nuget/packages/exceldatareader/3.6.0/exceldatareader.3.6.0.nupkg.sha512",
