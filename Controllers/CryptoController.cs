@@ -44,7 +44,6 @@ namespace api.Controllers
                         while (!reader.EndOfStream)
                         { 
                             var line = reader.ReadLine();
-                            //Logger.Log(line);
                             var values = line.Split(',');
                             if (i == 0){
                                 int y = 0;
@@ -70,8 +69,6 @@ namespace api.Controllers
                                     {                                                                             
                                         ColumnAttribute attr = property.GetCustomAttributes().OfType<ColumnAttribute>().Where(a => a.Name == column).FirstOrDefault();
                                         if (attr != null){
-                                            // Logger.Log(value);
-                                            // Logger.Log(property.Name);
                                             property.SetValue(transac, value);
                                         }
                                     }
@@ -100,16 +97,22 @@ namespace api.Controllers
                 slug = "btc,eth,ada,vet,doge,matic,ltc,sand";
             }
             dic.Add("symbol", slug);
-            return CoinMarketCap.Call("v1/cryptocurrency/info", dic);                     
+            return CoinMarketCap.Call(CoinMarketCapRoutes.Info, dic);                     
         }
                    
-
+        [HttpGet("Info")]
+        public string Info(string currency)
+        {
+            Dictionary<string, string> query = new Dictionary<string, string>();
+            query.Add("symbol", currency);
+            return CoinMarketCap.Call(CoinMarketCapRoutes.Info, query);                  
+        }
         [HttpGet]
         public string Get(string currency)
         {
             Dictionary<string, string> query = new Dictionary<string, string>();
             query.Add("symbol", currency);
-            return CoinMarketCap.Call("v1/cryptocurrency/quotes/latest", query);                     
+            return CoinMarketCap.Call(CoinMarketCapRoutes.Quote, query);                  
         }
     }
 }

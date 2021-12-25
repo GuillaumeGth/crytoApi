@@ -2,15 +2,24 @@ using System.Web;
 using System.Net;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 namespace api.Services{
     public class CoinMarketCap {
-        private static string API_KEY = "9f6f5baf-d671-4815-8b42-7766f3036d01";    
+        private static string API_KEY = "9f6f5baf-d671-4815-8b42-7766f3036d01";   
         public static string Call(
-            string path, 
+            CoinMarketCapRoutes route,
             Dictionary<string, string> query = null){
-            try{
-                string url = $"https://pro-api.coinmarketcap.com/{path}"; 
-                Logger.Log(url);
+            try{                
+                Logger.Log(route.ToString());
+                var enumType = typeof(CoinMarketCapRoutes);
+                var memberInfos = 
+                enumType.GetMember(route.ToString());
+                var enumValueMemberInfo = memberInfos.FirstOrDefault(m => 
+                m.DeclaringType == enumType);
+                var valueAttributes = 
+                enumValueMemberInfo.GetCustomAttributes(typeof(ApiRoute), false);
+                var path = ((ApiRoute)valueAttributes[0]).Route;                
+                string url = $"https://pro-api.coinmarketcap.com/{path}";                
                 var URL = new UriBuilder(url);            
                 if (query != null){
                     var queryString = HttpUtility.ParseQueryString(string.Empty);            

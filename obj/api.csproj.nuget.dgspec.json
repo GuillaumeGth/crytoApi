@@ -38,29 +38,9 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
-            "EPPlus": {
-              "target": "Package",
-              "version": "[5.8.4, )"
-            },
-            "ExcelDataReader": {
-              "target": "Package",
-              "version": "[3.6.0, )"
-            },
-            "ExcelDataReader.DataSet": {
-              "target": "Package",
-              "version": "[3.6.0, )"
-            },
-            "ExcelPackage": {
-              "target": "Package",
-              "version": "[1.0.0, )"
-            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.1, )"
-            },
-            "OfficeOpenXml.Core.ExcelPackage": {
-              "target": "Package",
-              "version": "[1.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
