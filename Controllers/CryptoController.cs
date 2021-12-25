@@ -16,11 +16,17 @@ namespace api.Controllers
     [Route("[controller]")]
     public class CryptoController : ControllerBase
     {       
+        private DatabaseContext _context;
+        private IHttpContextAccessor _contextAccessor;
         private readonly ILogger<CryptoController> _logger;
 
-        public CryptoController(ILogger<CryptoController> logger)
+        public CryptoController(ILogger<CryptoController> logger,
+        DatabaseContext context, 
+        IHttpContextAccessor contextAccessor)
         {
             _logger = logger;
+            _context = context;
+            _contextAccessor = contextAccessor;
         }
         [HttpPost]
         [Route("transactions")]
@@ -79,8 +85,20 @@ namespace api.Controllers
                             }                                                                 
                         }                        
                     }
-                }                
+                }
+                foreach(Transaction t in transactions){
+                    Transaction transaction = _context.Transactions.Where(tr => tr.ID == t.ID).FirstOrDefault();
+                    if (t != null){
+                        transaction = t;
+                    }
+                    else{
+                        _context.Transactions.Add(t);
+                    }
+
+                }
+                _context.SaveChanges();                       
                 return transactions;
+
             }     
             catch(Exception e)  {
                 Logger.Error(e.Message);

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace api
 {
@@ -28,7 +28,16 @@ namespace api
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             }));
-            services.AddControllers();            
+            services.AddControllers();    
+            string herokuConnectionString = $@"
+                Server={Configuration["PostgreSql:Host"]};
+                Port={Configuration["PostgreSql:Port"]};
+                User Id={Configuration["PostgreSql:User"]};
+                Password={Configuration["PostgreSql:ServerPassword"]};
+                Database={Configuration["PostgreSql:DatabaseName"]};
+                SSL Mode=Require;Trust Server Certificate=true";        
+            NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(herokuConnectionString);           
+            services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(builder.ConnectionString));        
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "api", Version = "v1" });

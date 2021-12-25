@@ -10,7 +10,6 @@ namespace api.Services{
             CoinMarketCapRoutes route,
             Dictionary<string, string> query = null){
             try{                
-                Logger.Log(route.ToString());
                 var enumType = typeof(CoinMarketCapRoutes);
                 var memberInfos = 
                 enumType.GetMember(route.ToString());
