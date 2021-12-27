@@ -7,7 +7,7 @@ namespace api {
         {}
         protected override void OnModelCreating(ModelBuilder modelBuilder)  
         {  
-            modelBuilder.Entity<Transaction>().ToTable("transactions");              
+            modelBuilder.Entity<Transaction>().ToTable("transactions");            
         }
         public DbSet<Transaction> Transactions { get; set; }
        

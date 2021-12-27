@@ -5,7 +5,7 @@ namespace api.Models
     public class Transaction {
         public override string ToString()
         {
-            return ID;
+            return $"Transaction: {ID}";
         }
         [Key]
         [Column("transaction_id")]
@@ -21,6 +21,11 @@ namespace api.Models
         [Column("final_amount")]
         public string FinalAmount {get; set;}
         [Column("status")]
-        public string Status {get; set;}
+        public TransactionStatus Status {get; set;}
+        [Column("user")]
+        public string User { get; set; }
+    }
+    public enum TransactionStatus {
+        Failed, Completed
     }
 }

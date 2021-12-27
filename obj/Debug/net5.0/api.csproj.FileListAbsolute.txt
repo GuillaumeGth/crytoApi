@@ -64,3 +64,11 @@
 /Users/guillaumezarb/Documents/GitHub/cryto-api/obj/Debug/net5.0/ref/api.dll
 /Users/guillaumezarb/Documents/GitHub/cryto-api/obj/Debug/net5.0/api.pdb
 /Users/guillaumezarb/Documents/GitHub/cryto-api/obj/Debug/net5.0/api.genruntimeconfig.cache
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/DatabaseContext.dll
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/Microsoft.EntityFrameworkCore.dll
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/Microsoft.EntityFrameworkCore.Relational.dll
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/Npgsql.dll
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/package-lock.json
+/Users/guillaumezarb/Documents/GitHub/cryto-api/bin/Debug/net5.0/package.json

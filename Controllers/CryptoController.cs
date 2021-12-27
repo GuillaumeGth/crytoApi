@@ -8,36 +8,36 @@ using System.Collections.Generic;
 using api.Models;
 using System.Reflection;
 using api.Services;
+using api;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CryptoController : ControllerBase
-    {       
-        private DatabaseContext _context;
-        private IHttpContextAccessor _contextAccessor;
-        private readonly ILogger<CryptoController> _logger;
-
+    public class CryptoController : BaseApiController
+    {    
         public CryptoController(ILogger<CryptoController> logger,
         DatabaseContext context, 
-        IHttpContextAccessor contextAccessor)
-        {
-            _logger = logger;
-            _context = context;
-            _contextAccessor = contextAccessor;
+        IHttpContextAccessor contextAccessor): base(logger, context, contextAccessor){}       
+        [HttpGet]
+        public List<Transaction> Get(string user) {
+            ApiLogger.Log(user);
+            return Context.Transactions
+                .Where(t => t.User == user)
+                .Where(t => t.Status == TransactionStatus.Completed)
+                .ToList();
         }
         [HttpPost]
         [Route("transactions")]
-        public List<Transaction> LoadTransactions(IFormFile file)
+        public void LoadTransactions(IFormFile file, string user)
         {            
             try {                
                 List<Transaction> transactions = new List<Transaction>();           
                 if (file.Length > 0)
                 {
                     var filePath = System.IO.Directory.GetCurrentDirectory() + "/" + file.FileName;
-                    Logger.Log(filePath);
+                    ApiLogger.Log(filePath);
                     using (var stream = System.IO.File.Create(filePath))
                     {
                         file.CopyTo(stream);                        
@@ -54,8 +54,7 @@ namespace api.Controllers
                             if (i == 0){
                                 int y = 0;
                                 foreach(string value in values){
-                                    string col = string.Join('_', value.Trim().ToLower().Split(' ')).Replace("(utc+1)", string.Empty);                                
-                                    Logger.Log(col);
+                                    string col = string.Join('_', value.Trim().ToLower().Split(' ')).Replace("(utc+1)", string.Empty);                                                                    
                                     if (!columns.ContainsKey(col))
                                         columns.Add(col, y);
 
@@ -65,7 +64,7 @@ namespace api.Controllers
                             }
                             else{
                                 string transacId = values[values.Length -1];
-                                Transaction transac = new Transaction();   
+                                Transaction transac = new Transaction() {User = user};   
                                 transactions.Add(transac);                                                           
                                 int y = 0;                             
                                 foreach(string value in values){
@@ -73,64 +72,54 @@ namespace api.Controllers
                                     PropertyInfo[] pi =  transac.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);                                    
                                     foreach (PropertyInfo property in pi)
                                     {                                                                             
-                                        ColumnAttribute attr = property.GetCustomAttributes().OfType<ColumnAttribute>().Where(a => a.Name == column).FirstOrDefault();
+                                        ColumnAttribute attr = 
+                                            property
+                                            .GetCustomAttributes()
+                                            .OfType<ColumnAttribute>()
+                                            .Where(a => a.Name == column).FirstOrDefault();
+                                        object propertyValue = value;
                                         if (attr != null){
-                                            property.SetValue(transac, value);
-                                        }
+                                            if(property.PropertyType == typeof(TransactionStatus)){
+                                                propertyValue = (TransactionStatus)Enum.Parse(typeof(TransactionStatus), value);                                                
+                                            }                                            
+                                            property.SetValue(transac, propertyValue);                                            
+                                        }                                    
                                     }
                                     y++;
                                     
-                                } 
-                                Logger.Log(transac.ToString());
+                                }                                
                             }                                                                 
                         }                        
                     }
                 }
-                foreach(Transaction t in transactions){
-                    Transaction transaction = _context.Transactions.Where(tr => tr.ID == t.ID).FirstOrDefault();
-                    if (t != null){
-                        transaction = t;
-                    }
-                    else{
-                        _context.Transactions.Add(t);
-                    }
-
+                Context.Database.EnsureCreated();
+                ApiLogger.Log(transactions.Count());
+                foreach(Transaction t in transactions){  
+                    ApiLogger.Log(t.User);                      
+                    Transaction transaction = Context.Transactions.Where(tr => tr.ID == t.ID).FirstOrDefault();                    
+                    if (string.IsNullOrEmpty(transaction?.ID)){                    
+                        Context.Transactions.Add(t);
+                    }                    
                 }
-                _context.SaveChanges();                       
-                return transactions;
-
+                ApiLogger.Log(Context.Transactions.Count());
+                Context.SaveChanges();                       
             }     
             catch(Exception e)  {
-                Logger.Error(e.Message);
-                Logger.Error(e.StackTrace);    
-                return null;                          
+                ApiLogger.Error(e.Message);
+                ApiLogger.Error(e.StackTrace);                
             }
         }
         [HttpGet]
-        [Route("currencies")]
-        public object Currencies(string slug = null)
+        [Route("quotes")]
+        public string Quotes(string symbol = null)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
-            if (slug == null){
-                slug = "btc,eth,ada,vet,doge,matic,ltc,sand";
+            if (symbol == null){
+                symbol = "btc,eth,ada,vet,doge,matic,ltc,sand";
             }
-            dic.Add("symbol", slug);
-            return CoinMarketCap.Call(CoinMarketCapRoutes.Info, dic);                     
-        }
-                   
-        [HttpGet("Info")]
-        public string Info(string currency)
-        {
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("symbol", currency);
-            return CoinMarketCap.Call(CoinMarketCapRoutes.Info, query);                  
-        }
-        [HttpGet]
-        public string Get(string currency)
-        {
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("symbol", currency);
-            return CoinMarketCap.Call(CoinMarketCapRoutes.Quote, query);                  
-        }
+            dic.Add("symbol", symbol);
+            string res = CoinMarketCap.Call(CoinMarketCapRoutes.Quote, dic);            
+            return res;                     
+        }        
     }
 }

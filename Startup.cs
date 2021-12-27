@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace api
 {
@@ -28,7 +29,8 @@ namespace api
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             }));
-            services.AddControllers();    
+            services.AddControllers(); 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             string herokuConnectionString = $@"
                 Server={Configuration["PostgreSql:Host"]};
                 Port={Configuration["PostgreSql:Port"]};

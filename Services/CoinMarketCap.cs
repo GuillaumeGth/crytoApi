@@ -29,12 +29,12 @@ namespace api.Services{
                 }            
                 var client = new WebClient();
                 client.Headers.Add("X-CMC_PRO_API_KEY", API_KEY);
-                client.Headers.Add("Accepts", "application/json");      
+                client.Headers.Add("Accepts", "application/json");
                 return client.DownloadString(URL.ToString());  
             }
             catch(Exception e)  {
-                Logger.Error(e.Message);
-                Logger.Error(e.StackTrace);    
+                ApiLogger.Error(e.Message);
+                ApiLogger.Error(e.StackTrace);    
                 return null;                          
             }            
         }

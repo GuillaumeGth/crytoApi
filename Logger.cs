@@ -1,6 +1,6 @@
 using System;
-namespace api{
-    public class Logger
+namespace api {
+    public class ApiLogger
     {
         public static void Log(object message){
             Console.ForegroundColor = ConsoleColor.Green;

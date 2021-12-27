@@ -18,7 +18,7 @@ namespace api.Controllers
         [Route("login")]
         public void Login(string email)
         {
-            Logger.Log(email);
+            ApiLogger.Log(email);
         }
     }
 }
