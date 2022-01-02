@@ -30,31 +30,42 @@ namespace api
                 .AllowAnyHeader();
             }));
             services.AddControllers();             
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();        
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();                 
             string databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") ?? Configuration["PostgreSql:DATABASE_URL"];            
             Uri databaseUri = null;
             string[] userInfo = {null, null};
-            if (databaseUrl != null){
+            ApiLogger.Log("databaseUrl");  
+            ApiLogger.Log(databaseUrl);            
+            if (!string.IsNullOrEmpty(databaseUrl)){
                 databaseUri = new Uri(databaseUrl);                
                 if (databaseUri != null)
                     userInfo = databaseUri.UserInfo.Split(':');
-            }           
+            }   
+            // ApiLogger.Log(databaseUri);        
+            // ApiLogger.Log(databaseUri?.Host ?? Configuration["PostgreSql:Host"]);
+            // ApiLogger.Log(int.Parse(databaseUri?.Port.ToString() ?? Configuration["PostgreSql:Port"]));
+            // ApiLogger.Log(userInfo[0] ?? Configuration["PostgreSql:User"]);
+            // ApiLogger.Log(databaseUri?.LocalPath?.TrimStart('/') ?? Configuration["PostgreSql:DatabaseName"]);
+            // ApiLogger.Log(userInfo[1] ?? Configuration["PostgreSql:ServerPassword"]);
+            // var builder = new NpgsqlConnectionStringBuilder
+            // {
+            //     Host = databaseUri?.Host ?? Configuration["PostgreSql:Host"],
+            //     Port = int.Parse(databaseUri?.Port.ToString() ?? Configuration["PostgreSql:Port"]),
+            //     Username = userInfo[0] ?? Configuration["PostgreSql:User"],
+            //     Password = userInfo[1] ?? Configuration["PostgreSql:ServerPassword"],
+            //     Database = databaseUri?.LocalPath?.TrimStart('/') ?? Configuration["PostgreSql:DatabaseName"]
+            // };
             var builder = new NpgsqlConnectionStringBuilder
             {
-                Host = databaseUri?.Host ?? Configuration["PostgreSql:Host"],
-                Port = int.Parse(databaseUri?.Port.ToString() ?? Configuration["PostgreSql:Port"]),
-                Username = userInfo[0] ?? Configuration["PostgreSql:User"],
-                Password = userInfo[1] ?? Configuration["PostgreSql:ServerPassword"],
-                Database = databaseUri.LocalPath.TrimStart('/') ?? Configuration["PostgreSql:DatabaseName"]
+                Host = Configuration["PostgreSql:Host"],
+                Port = int.Parse(Configuration["PostgreSql:Port"]),
+                Username = Configuration["PostgreSql:User"],
+                Password = Configuration["PostgreSql:ServerPassword"],
+                Database = Configuration["PostgreSql:DatabaseName"],
+                SslMode = SslMode.Require,
+                TrustServerCertificate = true
             };
-            // string herokuConnectionString = $@"
-            //     Server={Configuration["PostgreSql:Host"]};
-            //     Port={Configuration["PostgreSql:Port"]};
-            //     User Id={Configuration["PostgreSql:User"]};
-            //     Password={Configuration["PostgreSql:ServerPassword"]};
-            //     Database={Configuration["PostgreSql:DatabaseName"]};
-            //     SSL Mode=Require;Trust Server Certificate=true";        
-            // NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(herokuConnectionString);                       
+            ApiLogger.Log(builder.ConnectionString);                 
             services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(builder.ConnectionString));        
             services.AddSwaggerGen(c =>
             {
@@ -70,7 +81,8 @@ namespace api
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "api v1"));
-            }                      
+            }
+            app.UseCors("MyPolicy");            
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
